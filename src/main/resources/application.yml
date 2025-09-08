@@ -1,0 +1,26 @@
+spring:
+  application:
+    name: catapract
+  datasource:
+    url: "jdbc:postgresql://localhost:5432/catapract_db"
+    username: "postgres"
+    password: "DucPhuc2"
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 20
+      auto-commit: true
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+    properties:
+      hibernate:
+        "[format_sql]": true
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+logging:
+  level:
+    "[com.zaxxer]":
+      hikari: DEBUG
