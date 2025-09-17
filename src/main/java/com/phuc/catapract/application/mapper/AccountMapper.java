@@ -10,9 +10,10 @@ import com.phuc.catapract.domain.entities.Account;
 @Mapper(componentModel = "spring")
 public interface AccountMapper {
     AccountMapper INSTANCE = Mappers.getMapper(AccountMapper.class);
-    @Mapping(target = "dateOfBirth", source = "dateOfBirth", dateFormat = "yyyy-MM-dd")
     AccountDTO toDto(Account account);
 
+    @Mapping(target = "id", ignore = true)
     @Mapping(target = "password", ignore = true)
     Account toEntity(AccountDTO accountDto);
 }
+    

@@ -1,4 +1,6 @@
 spring:
+  main:
+    allow-bean-definition-overriding: true
   application:
     name: catapract
   datasource:
@@ -19,6 +21,10 @@ spring:
         "[format_sql]": true
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+  security:
+    user:
+      name: phuc
+      password: phuc123456789@a
 
 logging:
   level:
