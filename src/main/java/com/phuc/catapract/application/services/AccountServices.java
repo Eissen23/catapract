@@ -1,10 +1,14 @@
 package com.phuc.catapract.application.services;
 
+import java.util.List;
+
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import com.phuc.catapract.domain.entities.Account;
 import com.phuc.catapract.domain.repositories.AccountRepository;
@@ -14,6 +18,8 @@ import lombok.AllArgsConstructor;
 @Service
 @AllArgsConstructor
 public class AccountServices implements UserDetailsService{
+
+    private final PasswordEncoder passwordEncoder;
 
     private final AccountRepository accountRepository;
 
@@ -29,6 +35,23 @@ public class AccountServices implements UserDetailsService{
                 .build();
     }
 
+
+    public Account registerAccount (Account account) {
+        return null;
+    }
     
+    public Account getAccInfo(@PathVariable Integer id) {
+        return accountRepository.findById(id).orElse(new Account());
+    }
+    
+    public List<Account> getAllAcc() {
+        return accountRepository.findAll();
+    }
+    
+    public Account register(Account entity) {
+        entity.setPassword(passwordEncoder.encode(entity.getPassword()));
+
+        return accountRepository.save(entity);
+    }
 
 }
