@@ -25,8 +25,3 @@ spring:
     user:
       name: phuc
       password: phuc123456789@a
-
-logging:
-  level:
-    "[com.zaxxer]":
-      hikari: DEBUG
