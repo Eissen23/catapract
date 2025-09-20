@@ -2,10 +2,9 @@ package com.phuc.catapract.application.services;
 
 import java.util.List;
 
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,23 +17,13 @@ import lombok.AllArgsConstructor;
 
 @Service
 @AllArgsConstructor
-public class AccountServices implements UserDetailsService {
+public class AccountServices {
 
     private final PasswordEncoder passwordEncoder;
-
     private final AccountRepository accountRepository;
+    private final AuthenticationManager authenticationManager;
 
-    @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Account account = accountRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
-
-        return User.builder()
-                .username(account.getEmail())
-                .password(account.getPassword())
-                .roles("USER") // or map roles from your entity if you have them
-                .build();
-    }
+    
 
     public Account registerAccount(Account account) {
         return null;
@@ -55,10 +44,11 @@ public class AccountServices implements UserDetailsService {
     }
 
     public boolean verify(LoginDTO loginCred) {
-        Account unVerified = accountRepository.findByEmail(loginCred.email())
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + loginCred.email()));
-
-        if (!passwordEncoder.matches(loginCred.password(), unVerified.getPassword())) {
+        Authentication authentication = authenticationManager
+                .authenticate(new UsernamePasswordAuthenticationToken(
+                            loginCred.email(), 
+                            loginCred.password()));
+        if (!authentication.isAuthenticated()) {
             return false;
         }
 
