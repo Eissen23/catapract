@@ -1,8 +1,7 @@
 package com.phuc.catapract.presentation.controllers;
 
-import java.util.List;
-
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -12,6 +11,8 @@ import com.phuc.catapract.application.dto.authenticate.LoginDTO;
 import com.phuc.catapract.application.mapper.AccountMapper;
 import com.phuc.catapract.application.services.AccountServices;
 import com.phuc.catapract.domain.entities.Account;
+import com.phuc.catapract.domain.utilities.JwtUtil;
+import com.phuc.catapract.shared.dto.JwtResponse;
 
 @RestController
 public class AccountController {
@@ -19,7 +20,7 @@ public class AccountController {
     public final AccountServices accountServices;
     public final AccountMapper accountMapper;
 
-    AccountController (AccountServices accountServices,AccountMapper accountMapper) {
+    AccountController (AccountServices accountServices,AccountMapper accountMapper,JwtUtil  jwtUtil) {
         this.accountServices = accountServices;
         this.accountMapper = accountMapper;
     } 
@@ -31,19 +32,14 @@ public class AccountController {
     }
 
     @PostMapping("/public/login")
-    public String login(@RequestBody LoginDTO cred) {
-        if(!accountServices.verify(cred)) {
-            return "Bad credentials";
+    public ResponseEntity<?> login(@RequestBody LoginDTO cred) {
+        String token = accountServices.verify(cred);
+        if(token == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Bad credentials");
         }
-        return "Success";
+        
+        return ResponseEntity.ok(new JwtResponse(token));
     }
 
-    @GetMapping("/accounts")
-    public List<AccountDTO> getAccounts() {
-        List<Account> accounts = accountServices.getAllAcc();
-        return accounts.stream()
-                .map(accountMapper::toDto)
-                .toList();
-    }
 
 }

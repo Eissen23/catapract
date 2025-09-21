@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import com.phuc.catapract.application.dto.authenticate.LoginDTO;
 import com.phuc.catapract.domain.entities.Account;
 import com.phuc.catapract.domain.repositories.AccountRepository;
+import com.phuc.catapract.domain.utilities.JwtUtil;
 
 import lombok.AllArgsConstructor;
 
@@ -22,8 +24,8 @@ public class AccountServices {
     private final PasswordEncoder passwordEncoder;
     private final AccountRepository accountRepository;
     private final AuthenticationManager authenticationManager;
+    private final JwtUtil jwtUtil;
 
-    
 
     public Account registerAccount(Account account) {
         return null;
@@ -43,16 +45,19 @@ public class AccountServices {
         return accountRepository.save(entity);
     }
 
-    public boolean verify(LoginDTO loginCred) {
+    public String  verify(LoginDTO loginCred) {
         Authentication authentication = authenticationManager
                 .authenticate(new UsernamePasswordAuthenticationToken(
                             loginCred.email(), 
                             loginCred.password()));
+
         if (!authentication.isAuthenticated()) {
-            return false;
+            return null;
         }
 
-        return true;
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+
+        return jwtUtil.generateToken(userDetails);
     }
 
 }
